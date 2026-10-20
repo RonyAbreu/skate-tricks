@@ -33,12 +33,27 @@ body {
 
 .topbar {
   padding: 20px 16px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .topbar h1 {
   margin: 0;
   font-size: 22px;
   font-weight: 700;
+}
+
+.cat-count {
+  flex: 0 0 auto;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
 }
 
 .search-bar {

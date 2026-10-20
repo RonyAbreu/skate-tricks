@@ -19,6 +19,7 @@
   const confirmMessage = document.getElementById("confirmMessage");
   const btnConfirmCancel = document.getElementById("btnConfirmCancel");
   const btnConfirmDelete = document.getElementById("btnConfirmDelete");
+  const catCount = document.getElementById("catCount");
 
   let tricks = [];
   let activeCat = "todas";
@@ -36,13 +37,14 @@
 
   function render() {
     const term = searchTerm.trim().toLowerCase();
-    const filtered = tricks
-      .filter(t => activeCat === "todas" || (t.categorias || []).includes(activeCat))
+    const byCat = tricks.filter(t => activeCat === "todas" || (t.categorias || []).includes(activeCat));
+    const filtered = byCat
       .filter(t => !term || t.nome.toLowerCase().includes(term))
-      .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+      .sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
 
     listEl.innerHTML = "";
     emptyState.hidden = filtered.length !== 0;
+    catCount.textContent = byCat.length;
 
     filtered.forEach(t => {
       const card = document.createElement("button");
