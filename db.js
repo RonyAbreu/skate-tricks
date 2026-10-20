@@ -69,6 +69,7 @@ const TricksDB = (() => {
       id: trick.id || uuid(),
       nome: trick.nome.trim(),
       categorias: Array.isArray(trick.categorias) ? trick.categorias : [],
+      estilo: trick.estilo || "solo",
       notas: (trick.notas || "").trim(),
       criadoEm: trick.criadoEm || Date.now()
     };

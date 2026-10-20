@@ -20,6 +20,12 @@
   <input type="search" id="searchInput" placeholder="Buscar manobra...">
 </div>
 
+<div class="estilo-group" id="estiloGroup">
+  <button class="estilo-btn active" data-estilo="solo">Solo</button>
+  <button class="estilo-btn" data-estilo="corrimao">Corrimão</button>
+  <button class="estilo-btn" data-estilo="borda">Borda</button>
+</div>
+
 <nav class="tabs" id="tabs">
   <button class="tab active" data-cat="todas">Todas</button>
   <button class="tab" data-cat="base">Base</button>
@@ -67,8 +73,7 @@
         </label>
       </div>
 
-      <label for="trickNotas">Notas (opcional)</label>
-      <textarea id="trickNotas" maxlength="300" rows="3" placeholder="Detalhes, variação, etc."></textarea>
+      <p class="estilo-display">Estilo: <strong id="trickEstiloLabel">Solo</strong></p>
 
       <div class="modal-actions">
         <button type="button" id="btnCancel" class="btn-ghost">Cancelar</button>

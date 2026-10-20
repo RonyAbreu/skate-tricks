@@ -9,7 +9,8 @@
   const trickForm = document.getElementById("trickForm");
   const trickNome = document.getElementById("trickNome");
   const trickCategoriasEl = document.getElementById("trickCategorias");
-  const trickNotas = document.getElementById("trickNotas");
+  const trickEstiloLabel = document.getElementById("trickEstiloLabel");
+  const estiloGroupEl = document.getElementById("estiloGroup");
   const btnCancel = document.getElementById("btnCancel");
   const btnDelete = document.getElementById("btnDelete");
   const btnExport = document.getElementById("btnExport");
@@ -30,10 +31,15 @@
 
   let tricks = [];
   let activeCat = "todas";
+  let activeEstilo = "solo";
   let searchTerm = "";
   let editingId = null;
+  let editingNotas = "";
+  let editingEstilo = "solo";
+  let editingCriadoEm = null;
 
   const CAT_LABEL = { base: "Base", nollie: "Nollie", fakie: "Fakie", switch: "Switch" };
+  const ESTILO_LABEL = { solo: "Solo", corrimao: "Corrimão", borda: "Borda" };
   const LS_NOME = "skateTricksNome";
   const LS_ONBOARDED = "skateTricksOnboarded";
 
@@ -46,7 +52,8 @@
 
   function render() {
     const term = searchTerm.trim().toLowerCase();
-    const byCat = tricks.filter(t => activeCat === "todas" || (t.categorias || []).includes(activeCat));
+    const byEstilo = tricks.filter(t => (t.estilo || "solo") === activeEstilo);
+    const byCat = byEstilo.filter(t => activeCat === "todas" || (t.categorias || []).includes(activeCat));
     const filtered = byCat
       .filter(t => !term || t.nome.toLowerCase().includes(term))
       .sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
@@ -54,7 +61,7 @@
     listEl.innerHTML = "";
     emptyState.hidden = filtered.length !== 0;
     catCount.textContent = activeCat === "todas"
-      ? tricks.reduce((sum, t) => sum + (t.categorias || []).length, 0)
+      ? byEstilo.reduce((sum, t) => sum + (t.categorias || []).length, 0)
       : byCat.length;
 
     filtered.forEach(t => {
@@ -98,6 +105,15 @@
     render();
   });
 
+  estiloGroupEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".estilo-btn");
+    if (!btn) return;
+    estiloGroupEl.querySelectorAll(".estilo-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeEstilo = btn.dataset.estilo;
+    render();
+  });
+
   searchInput.addEventListener("input", (e) => {
     searchTerm = e.target.value;
     render();
@@ -105,9 +121,12 @@
 
   function openModal(trick) {
     editingId = trick ? trick.id : null;
+    editingNotas = trick ? (trick.notas || "") : "";
+    editingEstilo = trick ? (trick.estilo || "solo") : activeEstilo;
+    editingCriadoEm = trick ? (trick.criadoEm || null) : null;
     modalTitle.textContent = trick ? "Editar manobra" : "Nova manobra";
     trickNome.value = trick ? trick.nome : "";
-    trickNotas.value = trick ? (trick.notas || "") : "";
+    trickEstiloLabel.textContent = ESTILO_LABEL[editingEstilo] || editingEstilo;
 
     const preChecked = trick
       ? (trick.categorias || [])
@@ -146,7 +165,9 @@
       id: editingId || undefined,
       nome,
       categorias,
-      notas: trickNotas.value
+      estilo: editingEstilo,
+      notas: editingNotas,
+      criadoEm: editingCriadoEm || undefined
     });
     closeModal();
     await loadAll();
@@ -207,8 +228,8 @@
     const incoming = Array.isArray(parsed) ? parsed : parsed.tricks;
     if (!Array.isArray(incoming)) throw new Error("formato inválido");
 
-    const keyOf = (nome, categorias) => nome.toLowerCase() + "|" + [...categorias].sort().join(",");
-    const existingKeys = new Set(tricks.map(t => keyOf(t.nome, t.categorias || [])));
+    const keyOf = (nome, categorias, estilo) => nome.toLowerCase() + "|" + [...categorias].sort().join(",") + "|" + estilo;
+    const existingKeys = new Set(tricks.map(t => keyOf(t.nome, t.categorias || [], t.estilo || "solo")));
     const toAdd = [];
     incoming.forEach(t => {
       if (!t || !t.nome) return;
@@ -216,13 +237,15 @@
         ? t.categorias
         : (t.categoria ? [t.categoria] : []);
       if (!categorias.length) return;
-      const key = keyOf(t.nome, categorias);
+      const estilo = t.estilo || "solo";
+      const key = keyOf(t.nome, categorias, estilo);
       if (existingKeys.has(key)) return;
       existingKeys.add(key);
       toAdd.push({
         id: TricksDB.uuid(),
         nome: String(t.nome).trim(),
         categorias,
+        estilo,
         notas: t.notas || "",
         criadoEm: t.criadoEm || Date.now()
       });

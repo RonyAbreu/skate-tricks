@@ -87,6 +87,37 @@ body {
   outline: 2px solid var(--accent);
 }
 
+.estilo-group {
+  display: flex;
+  gap: 8px;
+  padding: 4px 16px 8px;
+}
+
+.estilo-btn {
+  flex: 1 1 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+}
+
+.estilo-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
 .tabs {
   display: flex;
   gap: 8px;
@@ -307,6 +338,16 @@ body {
   font-size: 13px;
   color: var(--text-dim);
   margin: 12px 0 6px;
+}
+
+.estilo-display {
+  margin: 16px 0 0;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.estilo-display strong {
+  color: var(--text);
 }
 
 .checkbox-group {
