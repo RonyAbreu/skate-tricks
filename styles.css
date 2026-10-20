@@ -103,6 +103,9 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  color: var(--text);
+  font-family: inherit;
+  text-align: left;
 }
 
 .trick-info {
@@ -222,6 +225,27 @@ body {
   font-weight: 700;
 }
 
+.btn-danger-solid {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: var(--danger);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.confirm-content {
+  border-radius: 20px;
+}
+
+.confirm-message {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
 .modal {
   position: fixed;
   inset: 0;
@@ -249,7 +273,7 @@ body {
   font-size: 18px;
 }
 
-#trickForm label,
+#trickForm label:not(.checkbox-item),
 .field-label {
   display: block;
   font-size: 13px;

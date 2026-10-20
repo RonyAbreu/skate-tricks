@@ -15,6 +15,10 @@
   const btnExport = document.getElementById("btnExport");
   const importInput = document.getElementById("importInput");
   const toast = document.getElementById("toast");
+  const confirmModal = document.getElementById("confirmModal");
+  const confirmMessage = document.getElementById("confirmMessage");
+  const btnConfirmCancel = document.getElementById("btnConfirmCancel");
+  const btnConfirmDelete = document.getElementById("btnConfirmDelete");
 
   let tricks = [];
   let activeCat = "todas";
@@ -135,11 +139,32 @@
     showToast("Manobra salva");
   });
 
-  btnDelete.addEventListener("click", async () => {
+  function openConfirmModal() {
+    const trick = tricks.find(t => t.id === editingId);
+    confirmMessage.textContent = trick
+      ? `Tem certeza que quer excluir "${trick.nome}"? Essa ação não pode ser desfeita.`
+      : "Tem certeza que quer excluir essa manobra? Essa ação não pode ser desfeita.";
+    confirmModal.hidden = false;
+  }
+
+  function closeConfirmModal() {
+    confirmModal.hidden = true;
+  }
+
+  btnDelete.addEventListener("click", () => {
     if (!editingId) return;
-    if (!confirm("Excluir essa manobra?")) return;
-    await TricksDB.remove(editingId);
+    openConfirmModal();
+  });
+
+  btnConfirmCancel.addEventListener("click", closeConfirmModal);
+  confirmModal.addEventListener("click", (e) => { if (e.target === confirmModal) closeConfirmModal(); });
+
+  btnConfirmDelete.addEventListener("click", async () => {
+    if (!editingId) return;
+    const id = editingId;
+    closeConfirmModal();
     closeModal();
+    await TricksDB.remove(id);
     await loadAll();
     showToast("Manobra excluída");
   });
