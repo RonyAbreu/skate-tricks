@@ -52,7 +52,8 @@
       const card = document.createElement("button");
       card.className = "trick-card";
       card.type = "button";
-      const cats = t.categorias && t.categorias.length ? t.categorias : ["-"];
+      const allCats = t.categorias && t.categorias.length ? t.categorias : ["-"];
+      const cats = activeCat === "todas" ? allCats : [activeCat];
       card.innerHTML = `
         <div class="trick-info">
           <span class="trick-nome"></span>
