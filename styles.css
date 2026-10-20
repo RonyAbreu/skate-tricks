@@ -32,11 +32,14 @@ body {
 }
 
 .topbar {
-  padding: 20px 16px 8px;
+  padding: 28px 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  background:
+    linear-gradient(rgba(15, 17, 21, 0.55), rgba(15, 17, 21, 0.75)),
+    url("assets/skatista.jpg") center/cover no-repeat;
 }
 
 .topbar-title {
@@ -47,6 +50,7 @@ body {
   margin: 0;
   font-size: 22px;
   font-weight: 700;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .skater-name {
@@ -56,6 +60,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .cat-count {
@@ -220,6 +225,16 @@ body {
   margin-top: 40px;
   padding: 0 24px;
   font-size: 14px;
+}
+
+.empty-illustration {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  margin: 0 auto 16px;
+  display: block;
 }
 
 .fab {
