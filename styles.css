@@ -89,15 +89,14 @@ body {
 
 .estilo-group {
   display: flex;
-  gap: 8px;
-  padding: 4px 16px 8px;
+  padding: 0px 18px;
 }
 
 .estilo-btn {
   flex: 1 1 0;
   width: 100%;
+  height: 60px;
   aspect-ratio: 1 / 1;
-  border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-dim);
@@ -109,7 +108,6 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 4px;
 }
 
 .estilo-btn.active {
@@ -120,8 +118,10 @@ body {
 
 .tabs {
   display: flex;
+  align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 8px 16px 12px;
+  padding: 8px 18px 12px;
   overflow-x: auto;
   scrollbar-width: none;
 }
