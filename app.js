@@ -8,7 +8,7 @@
   const modalTitle = document.getElementById("modalTitle");
   const trickForm = document.getElementById("trickForm");
   const trickNome = document.getElementById("trickNome");
-  const trickCategoria = document.getElementById("trickCategoria");
+  const trickCategoriasEl = document.getElementById("trickCategorias");
   const trickNotas = document.getElementById("trickNotas");
   const btnCancel = document.getElementById("btnCancel");
   const btnDelete = document.getElementById("btnDelete");
@@ -33,7 +33,7 @@
   function render() {
     const term = searchTerm.trim().toLowerCase();
     const filtered = tricks
-      .filter(t => activeCat === "todas" || t.categoria === activeCat)
+      .filter(t => activeCat === "todas" || (t.categorias || []).includes(activeCat))
       .filter(t => !term || t.nome.toLowerCase().includes(term))
       .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 
@@ -44,16 +44,23 @@
       const card = document.createElement("button");
       card.className = "trick-card";
       card.type = "button";
+      const cats = t.categorias && t.categorias.length ? t.categorias : ["-"];
       card.innerHTML = `
         <div class="trick-info">
           <span class="trick-nome"></span>
           ${t.notas ? '<span class="trick-notas"></span>' : ""}
         </div>
-        <span class="badge badge-${t.categoria}"></span>
+        <div class="badge-group"></div>
       `;
       card.querySelector(".trick-nome").textContent = t.nome;
       if (t.notas) card.querySelector(".trick-notas").textContent = t.notas;
-      card.querySelector(".badge").textContent = CAT_LABEL[t.categoria] || t.categoria;
+      const badgeGroup = card.querySelector(".badge-group");
+      cats.forEach(cat => {
+        const badge = document.createElement("span");
+        badge.className = `badge badge-${cat}`;
+        badge.textContent = CAT_LABEL[cat] || cat;
+        badgeGroup.appendChild(badge);
+      });
       card.addEventListener("click", () => openModal(t));
       listEl.appendChild(card);
     });
@@ -82,8 +89,15 @@
     editingId = trick ? trick.id : null;
     modalTitle.textContent = trick ? "Editar manobra" : "Nova manobra";
     trickNome.value = trick ? trick.nome : "";
-    trickCategoria.value = trick ? trick.categoria : (activeCat !== "todas" ? activeCat : "base");
     trickNotas.value = trick ? (trick.notas || "") : "";
+
+    const preChecked = trick
+      ? (trick.categorias || [])
+      : (activeCat !== "todas" ? [activeCat] : []);
+    trickCategoriasEl.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = preChecked.includes(cb.value);
+    });
+
     btnDelete.hidden = !trick;
     modal.hidden = false;
     setTimeout(() => trickNome.focus(), 50);
@@ -103,10 +117,17 @@
     e.preventDefault();
     const nome = trickNome.value.trim();
     if (!nome) return;
+    const categorias = Array.from(
+      trickCategoriasEl.querySelectorAll('input[type="checkbox"]:checked')
+    ).map(cb => cb.value);
+    if (!categorias.length) {
+      showToast("Escolhe ao menos uma categoria");
+      return;
+    }
     await TricksDB.add({
       id: editingId || undefined,
       nome,
-      categoria: trickCategoria.value,
+      categorias,
       notas: trickNotas.value
     });
     closeModal();
@@ -146,17 +167,22 @@
       const incoming = Array.isArray(parsed) ? parsed : parsed.tricks;
       if (!Array.isArray(incoming)) throw new Error("formato inválido");
 
-      const existingKeys = new Set(tricks.map(t => (t.nome.toLowerCase() + "|" + t.categoria)));
+      const keyOf = (nome, categorias) => nome.toLowerCase() + "|" + [...categorias].sort().join(",");
+      const existingKeys = new Set(tricks.map(t => keyOf(t.nome, t.categorias || [])));
       const toAdd = [];
       incoming.forEach(t => {
-        if (!t || !t.nome || !t.categoria) return;
-        const key = t.nome.toLowerCase() + "|" + t.categoria;
+        if (!t || !t.nome) return;
+        const categorias = Array.isArray(t.categorias)
+          ? t.categorias
+          : (t.categoria ? [t.categoria] : []);
+        if (!categorias.length) return;
+        const key = keyOf(t.nome, categorias);
         if (existingKeys.has(key)) return;
         existingKeys.add(key);
         toAdd.push({
           id: TricksDB.uuid(),
           nome: String(t.nome).trim(),
-          categoria: t.categoria,
+          categorias,
           notas: t.notas || "",
           criadoEm: t.criadoEm || Date.now()
         });

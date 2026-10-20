@@ -43,13 +43,25 @@
       <label for="trickNome">Nome</label>
       <input type="text" id="trickNome" required maxlength="80" placeholder="Ex: Kickflip">
 
-      <label for="trickCategoria">Categoria</label>
-      <select id="trickCategoria" required>
-        <option value="base">Base</option>
-        <option value="nollie">Nollie</option>
-        <option value="fakie">Fakie</option>
-        <option value="switch">Switch</option>
-      </select>
+      <span class="field-label">Categorias</span>
+      <div class="checkbox-group" id="trickCategorias">
+        <label class="checkbox-item">
+          <input type="checkbox" name="categoria" value="base">
+          <span>Base</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="categoria" value="nollie">
+          <span>Nollie</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="categoria" value="fakie">
+          <span>Fakie</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="categoria" value="switch">
+          <span>Switch</span>
+        </label>
+      </div>
 
       <label for="trickNotas">Notas (opcional)</label>
       <textarea id="trickNotas" maxlength="300" rows="3" placeholder="Detalhes, variação, etc."></textarea>

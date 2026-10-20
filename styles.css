@@ -112,6 +112,15 @@ body {
   min-width: 0;
 }
 
+.badge-group {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  max-width: 45%;
+}
+
 .trick-nome {
   font-size: 16px;
   font-weight: 600;
@@ -240,11 +249,45 @@ body {
   font-size: 18px;
 }
 
-#trickForm label {
+#trickForm label,
+.field-label {
   display: block;
   font-size: 13px;
   color: var(--text-dim);
   margin: 12px 0 6px;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-item input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.checkbox-item:has(input:checked) {
+  border-color: var(--accent);
+  background: rgba(255, 92, 56, 0.12);
 }
 
 #trickForm input,

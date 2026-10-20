@@ -1,6 +1,6 @@
 const TricksDB = (() => {
   const DB_NAME = "skate-tricks";
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const STORE = "tricks";
   let dbPromise = null;
 
@@ -8,12 +8,34 @@ const TricksDB = (() => {
     if (dbPromise) return dbPromise;
     dbPromise = new Promise((resolve, reject) => {
       const req = indexedDB.open(DB_NAME, DB_VERSION);
-      req.onupgradeneeded = () => {
+      req.onupgradeneeded = (event) => {
         const db = req.result;
-        if (!db.objectStoreNames.contains(STORE)) {
-          const store = db.createObjectStore(STORE, { keyPath: "id" });
-          store.createIndex("categoria", "categoria", { unique: false });
+        const store = db.objectStoreNames.contains(STORE)
+          ? req.transaction.objectStore(STORE)
+          : db.createObjectStore(STORE, { keyPath: "id" });
+
+        if (!store.indexNames.contains("nome")) {
           store.createIndex("nome", "nome", { unique: false });
+        }
+        if (store.indexNames.contains("categoria")) {
+          store.deleteIndex("categoria");
+        }
+        if (!store.indexNames.contains("categorias")) {
+          store.createIndex("categorias", "categorias", { unique: false, multiEntry: true });
+        }
+
+        if (event.oldVersion < 2) {
+          store.openCursor().onsuccess = (e) => {
+            const cursor = e.target.result;
+            if (!cursor) return;
+            const record = cursor.value;
+            if (!Array.isArray(record.categorias)) {
+              record.categorias = record.categoria ? [record.categoria] : [];
+              delete record.categoria;
+              cursor.update(record);
+            }
+            cursor.continue();
+          };
         }
       };
       req.onsuccess = () => resolve(req.result);
@@ -46,7 +68,7 @@ const TricksDB = (() => {
     const record = {
       id: trick.id || uuid(),
       nome: trick.nome.trim(),
-      categoria: trick.categoria,
+      categorias: Array.isArray(trick.categorias) ? trick.categorias : [],
       notas: (trick.notas || "").trim(),
       criadoEm: trick.criadoEm || Date.now()
     };
