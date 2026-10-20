@@ -32,18 +32,25 @@ body {
 }
 
 .topbar {
-  padding: 28px 16px 20px;
+  padding: 20px 16px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  background:
-    linear-gradient(rgba(15, 17, 21, 0.55), rgba(15, 17, 21, 0.75)),
-    url("assets/skatista.jpg") center/cover no-repeat;
+}
+
+.topbar-logo {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid var(--border);
 }
 
 .topbar-title {
   min-width: 0;
+  flex: 1;
 }
 
 .topbar h1 {
@@ -81,7 +88,7 @@ body {
 .search-bar input {
   width: 100%;
   padding: 12px 14px;
-  border-radius: var(--radius);
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
@@ -125,7 +132,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
   padding: 8px 18px 12px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -136,7 +142,7 @@ body {
 .tab {
   flex: 0 0 auto;
   padding: 8px 14px;
-  border-radius: 999px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-dim);
