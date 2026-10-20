@@ -44,7 +44,9 @@
 
     listEl.innerHTML = "";
     emptyState.hidden = filtered.length !== 0;
-    catCount.textContent = byCat.length;
+    catCount.textContent = activeCat === "todas"
+      ? tricks.reduce((sum, t) => sum + (t.categorias || []).length, 0)
+      : byCat.length;
 
     filtered.forEach(t => {
       const card = document.createElement("button");
