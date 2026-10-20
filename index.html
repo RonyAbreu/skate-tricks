@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skate Tricks</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Skate Tricks</h1>
+</header>
+
+<div class="search-bar">
+  <input type="search" id="searchInput" placeholder="Buscar manobra...">
+</div>
+
+<nav class="tabs" id="tabs">
+  <button class="tab active" data-cat="todas">Todas</button>
+  <button class="tab" data-cat="base">Base</button>
+  <button class="tab" data-cat="nollie">Nollie</button>
+  <button class="tab" data-cat="fakie">Fakie</button>
+  <button class="tab" data-cat="switch">Switch</button>
+</nav>
+
+<main id="list" class="list"></main>
+
+<p id="emptyState" class="empty-state" hidden>Nenhuma manobra ainda. Toca no + pra adicionar.</p>
+
+<button id="fabAdd" class="fab" aria-label="Adicionar manobra">+</button>
+
+<div class="bottom-actions">
+  <button id="btnExport" class="btn-ghost">Exportar</button>
+  <label class="btn-ghost" for="importInput">Importar</label>
+  <input type="file" id="importInput" accept="application/json" hidden>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-content">
+    <h2 id="modalTitle">Nova manobra</h2>
+    <form id="trickForm">
+      <label for="trickNome">Nome</label>
+      <input type="text" id="trickNome" required maxlength="80" placeholder="Ex: Kickflip">
+
+      <label for="trickCategoria">Categoria</label>
+      <select id="trickCategoria" required>
+        <option value="base">Base</option>
+        <option value="nollie">Nollie</option>
+        <option value="fakie">Fakie</option>
+        <option value="switch">Switch</option>
+      </select>
+
+      <label for="trickNotas">Notas (opcional)</label>
+      <textarea id="trickNotas" maxlength="300" rows="3" placeholder="Detalhes, variação, etc."></textarea>
+
+      <div class="modal-actions">
+        <button type="button" id="btnCancel" class="btn-ghost">Cancelar</button>
+        <button type="button" id="btnDelete" class="btn-danger" hidden>Excluir</button>
+        <button type="submit" class="btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="db.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
