@@ -361,16 +361,6 @@ body {
   margin: 12px 0 6px;
 }
 
-.estilo-display {
-  margin: 16px 0 0;
-  font-size: 14px;
-  color: var(--text-dim);
-}
-
-.estilo-display strong {
-  color: var(--text);
-}
-
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;

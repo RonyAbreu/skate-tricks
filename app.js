@@ -9,7 +9,7 @@
   const trickForm = document.getElementById("trickForm");
   const trickNome = document.getElementById("trickNome");
   const trickCategoriasEl = document.getElementById("trickCategorias");
-  const trickEstiloLabel = document.getElementById("trickEstiloLabel");
+  const trickEstiloEl = document.getElementById("trickEstilo");
   const estiloGroupEl = document.getElementById("estiloGroup");
   const btnCancel = document.getElementById("btnCancel");
   const btnDelete = document.getElementById("btnDelete");
@@ -35,11 +35,9 @@
   let searchTerm = "";
   let editingId = null;
   let editingNotas = "";
-  let editingEstilo = "solo";
   let editingCriadoEm = null;
 
   const CAT_LABEL = { base: "Base", nollie: "Nollie", fakie: "Fakie", switch: "Switch" };
-  const ESTILO_LABEL = { solo: "Solo", corrimao: "Corrimão", borda: "Borda" };
   const LS_NOME = "skateTricksNome";
   const LS_ONBOARDED = "skateTricksOnboarded";
 
@@ -122,11 +120,10 @@
   function openModal(trick) {
     editingId = trick ? trick.id : null;
     editingNotas = trick ? (trick.notas || "") : "";
-    editingEstilo = trick ? (trick.estilo || "solo") : activeEstilo;
     editingCriadoEm = trick ? (trick.criadoEm || null) : null;
     modalTitle.textContent = trick ? "Editar manobra" : "Nova manobra";
     trickNome.value = trick ? trick.nome : "";
-    trickEstiloLabel.textContent = ESTILO_LABEL[editingEstilo] || editingEstilo;
+    trickEstiloEl.value = trick ? (trick.estilo || "solo") : activeEstilo;
 
     const preChecked = trick
       ? (trick.categorias || [])
@@ -165,7 +162,7 @@
       id: editingId || undefined,
       nome,
       categorias,
-      estilo: editingEstilo,
+      estilo: trickEstiloEl.value,
       notas: editingNotas,
       criadoEm: editingCriadoEm || undefined
     });
