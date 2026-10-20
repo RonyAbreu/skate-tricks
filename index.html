@@ -9,7 +9,10 @@
 <body>
 
 <header class="topbar">
-  <h1>Skate Tricks</h1>
+  <div class="topbar-title">
+    <h1>Skate Tricks</h1>
+    <span id="nomeSkatista" class="skater-name" hidden></span>
+  </div>
   <span id="catCount" class="cat-count">0</span>
 </header>
 
@@ -83,6 +86,46 @@
     <div class="modal-actions">
       <button type="button" id="btnConfirmCancel" class="btn-ghost">Cancelar</button>
       <button type="button" id="btnConfirmDelete" class="btn-danger-solid">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<div id="onboardModal" class="modal" hidden>
+  <div class="modal-content">
+    <h2>E aí, skatista! 🛹</h2>
+    <p class="onboard-subtitle">Como posso te chamar?</p>
+    <input type="text" id="onboardNome" maxlength="40" placeholder="Seu nome ou apelido">
+    <div class="modal-actions">
+      <button type="button" id="btnOnboardContinuar" class="btn-primary">Continuar</button>
+    </div>
+    <p class="onboard-divider">ou</p>
+    <label class="btn-ghost onboard-import-label" for="importOnboardInput">Já tenho um backup, importar</label>
+    <input type="file" id="importOnboardInput" accept="application/json" hidden>
+  </div>
+</div>
+
+<div id="tutorialModal" class="modal" hidden>
+  <div class="modal-content">
+    <h2>Como funciona</h2>
+    <div class="tutorial-row">
+      <span class="tutorial-icon">➕</span>
+      <span>Toca no botão <strong>+</strong> pra cadastrar uma manobra nova</span>
+    </div>
+    <div class="tutorial-row">
+      <span class="tutorial-icon">🏷️</span>
+      <span>Usa as abas <strong>Base / Nollie / Fakie / Switch</strong> pra filtrar</span>
+    </div>
+    <div class="tutorial-row">
+      <span class="tutorial-icon">⬇️</span>
+      <span><strong>Exportar</strong> salva um arquivo de backup no teu dispositivo</span>
+    </div>
+    <div class="tutorial-row">
+      <span class="tutorial-icon">⬆️</span>
+      <span><strong>Importar</strong> traz de volta as manobras de um backup</span>
+    </div>
+    <p class="tutorial-warn">⚠️ Os dados ficam só neste navegador/aparelho. Exporta de vez em quando pra não perder nada!</p>
+    <div class="modal-actions">
+      <button type="button" id="btnTutorialOk" class="btn-primary">Entendi, bora!</button>
     </div>
   </div>
 </div>

@@ -20,6 +20,13 @@
   const btnConfirmCancel = document.getElementById("btnConfirmCancel");
   const btnConfirmDelete = document.getElementById("btnConfirmDelete");
   const catCount = document.getElementById("catCount");
+  const nomeSkatistaEl = document.getElementById("nomeSkatista");
+  const onboardModal = document.getElementById("onboardModal");
+  const onboardNomeInput = document.getElementById("onboardNome");
+  const btnOnboardContinuar = document.getElementById("btnOnboardContinuar");
+  const importOnboardInput = document.getElementById("importOnboardInput");
+  const tutorialModal = document.getElementById("tutorialModal");
+  const btnTutorialOk = document.getElementById("btnTutorialOk");
 
   let tricks = [];
   let activeCat = "todas";
@@ -27,6 +34,8 @@
   let editingId = null;
 
   const CAT_LABEL = { base: "Base", nollie: "Nollie", fakie: "Fakie", switch: "Switch" };
+  const LS_NOME = "skateTricksNome";
+  const LS_ONBOARDED = "skateTricksOnboarded";
 
   function showToast(msg) {
     toast.textContent = msg;
@@ -175,7 +184,11 @@
   });
 
   btnExport.addEventListener("click", () => {
-    const data = JSON.stringify({ exportadoEm: new Date().toISOString(), tricks }, null, 2);
+    const data = JSON.stringify({
+      exportadoEm: new Date().toISOString(),
+      skatista: localStorage.getItem(LS_NOME) || undefined,
+      tricks
+    }, null, 2);
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -188,39 +201,47 @@
     showToast("Exportado");
   });
 
+  async function importTricksFromFile(file) {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    const incoming = Array.isArray(parsed) ? parsed : parsed.tricks;
+    if (!Array.isArray(incoming)) throw new Error("formato inválido");
+
+    const keyOf = (nome, categorias) => nome.toLowerCase() + "|" + [...categorias].sort().join(",");
+    const existingKeys = new Set(tricks.map(t => keyOf(t.nome, t.categorias || [])));
+    const toAdd = [];
+    incoming.forEach(t => {
+      if (!t || !t.nome) return;
+      const categorias = Array.isArray(t.categorias)
+        ? t.categorias
+        : (t.categoria ? [t.categoria] : []);
+      if (!categorias.length) return;
+      const key = keyOf(t.nome, categorias);
+      if (existingKeys.has(key)) return;
+      existingKeys.add(key);
+      toAdd.push({
+        id: TricksDB.uuid(),
+        nome: String(t.nome).trim(),
+        categorias,
+        notas: t.notas || "",
+        criadoEm: t.criadoEm || Date.now()
+      });
+    });
+
+    if (toAdd.length) await TricksDB.bulkAdd(toAdd);
+    await loadAll();
+    return {
+      added: toAdd.length,
+      nome: parsed && parsed.skatista ? String(parsed.skatista).trim() : null
+    };
+  }
+
   importInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const text = await file.text();
-      const parsed = JSON.parse(text);
-      const incoming = Array.isArray(parsed) ? parsed : parsed.tricks;
-      if (!Array.isArray(incoming)) throw new Error("formato inválido");
-
-      const keyOf = (nome, categorias) => nome.toLowerCase() + "|" + [...categorias].sort().join(",");
-      const existingKeys = new Set(tricks.map(t => keyOf(t.nome, t.categorias || [])));
-      const toAdd = [];
-      incoming.forEach(t => {
-        if (!t || !t.nome) return;
-        const categorias = Array.isArray(t.categorias)
-          ? t.categorias
-          : (t.categoria ? [t.categoria] : []);
-        if (!categorias.length) return;
-        const key = keyOf(t.nome, categorias);
-        if (existingKeys.has(key)) return;
-        existingKeys.add(key);
-        toAdd.push({
-          id: TricksDB.uuid(),
-          nome: String(t.nome).trim(),
-          categorias,
-          notas: t.notas || "",
-          criadoEm: t.criadoEm || Date.now()
-        });
-      });
-
-      if (toAdd.length) await TricksDB.bulkAdd(toAdd);
-      await loadAll();
-      showToast(`${toAdd.length} manobra(s) importada(s)`);
+      const { added } = await importTricksFromFile(file);
+      showToast(`${added} manobra(s) importada(s)`);
     } catch (err) {
       showToast("Erro ao importar arquivo");
     } finally {
@@ -228,5 +249,64 @@
     }
   });
 
-  loadAll();
+  function renderNome() {
+    const nome = localStorage.getItem(LS_NOME);
+    if (nome) {
+      nomeSkatistaEl.textContent = nome;
+      nomeSkatistaEl.hidden = false;
+    } else {
+      nomeSkatistaEl.hidden = true;
+    }
+  }
+
+  function openTutorial() {
+    tutorialModal.hidden = false;
+  }
+
+  btnTutorialOk.addEventListener("click", () => {
+    tutorialModal.hidden = true;
+  });
+
+  function finishOnboarding(nome) {
+    localStorage.setItem(LS_ONBOARDED, "1");
+    if (nome) localStorage.setItem(LS_NOME, nome);
+    onboardModal.hidden = true;
+    renderNome();
+    openTutorial();
+  }
+
+  btnOnboardContinuar.addEventListener("click", () => {
+    const nome = onboardNomeInput.value.trim();
+    if (!nome) {
+      showToast("Digita teu nome ou importa teus dados");
+      return;
+    }
+    finishOnboarding(nome);
+  });
+
+  importOnboardInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const { added, nome } = await importTricksFromFile(file);
+      finishOnboarding(nome);
+      showToast(`${added} manobra(s) importada(s)`);
+    } catch (err) {
+      showToast("Erro ao importar arquivo");
+    } finally {
+      importOnboardInput.value = "";
+    }
+  });
+
+  function initOnboarding() {
+    renderNome();
+    if (localStorage.getItem(LS_ONBOARDED)) return;
+    if (tricks.length > 0) {
+      localStorage.setItem(LS_ONBOARDED, "1");
+      return;
+    }
+    onboardModal.hidden = false;
+  }
+
+  loadAll().then(initOnboarding);
 })();
