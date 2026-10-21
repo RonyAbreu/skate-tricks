@@ -481,6 +481,15 @@
   btnShareCancel.addEventListener("click", () => { shareModal.hidden = true; });
   shareModal.addEventListener("click", (e) => { if (e.target === shareModal) shareModal.hidden = true; });
 
+  function truncateToWidth(ctx, text, maxWidth) {
+    if (ctx.measureText(text).width <= maxWidth) return text;
+    let t = text;
+    while (t.length > 1 && ctx.measureText(t + "…").width > maxWidth) {
+      t = t.slice(0, -1);
+    }
+    return t + "…";
+  }
+
   function buildShareCanvas(estiloFiltro, catFiltro) {
     const porEstilo = tricks.filter(t => (t.estilo || "solo") === estiloFiltro);
     const estiloLabel = ESTILO_LABEL[estiloFiltro] || estiloFiltro;
@@ -500,60 +509,76 @@
     const dividerY = countsY + 26;
     const headerHeight = dividerY + 10;
     const lineHeight = 48;
-    const height = headerHeight + Math.max(filtrados.length, 1) * lineHeight + 50;
+    const padX = 24;
+    const colGap = 28;
+    const colWidth = (width - padX * 2 - colGap) / 2;
+    const col2X = padX + colWidth + colGap;
+    const rows = Math.max(Math.ceil(filtrados.length / 2), 1);
+    const height = headerHeight + rows * lineHeight + 50;
 
+    const SCALE = 2;
     const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = width * SCALE;
+    canvas.height = height * SCALE;
     const ctx = canvas.getContext("2d");
+    ctx.scale(SCALE, SCALE);
+    ctx.textBaseline = "alphabetic";
 
     ctx.fillStyle = "#0f1115";
     ctx.fillRect(0, 0, width, height);
 
     ctx.fillStyle = "#ff5c38";
     ctx.font = "bold 30px sans-serif";
-    ctx.fillText("🛹 Skate Tricks", 24, 48);
+    ctx.fillText("🛹 Skate Tricks", padX, 48);
 
     const nome = localStorage.getItem(LS_NOME);
     ctx.fillStyle = "#f0f1f3";
     ctx.font = "16px sans-serif";
-    ctx.fillText(nome ? `Skatista: ${nome}` : "Minhas manobras", 24, 76);
+    ctx.fillText(nome ? `Skatista: ${nome}` : "Minhas manobras", padX, 76);
 
     const catLabel = isTodas ? "todas as categorias" : CAT_LABEL[catFiltro];
     ctx.fillStyle = "#9aa0ab";
     ctx.font = "14px sans-serif";
-    ctx.fillText(`${estiloLabel} · ${catLabel} · ${filtrados.length} manobra(s)`, 24, subtitleY);
+    ctx.fillText(`${estiloLabel} · ${catLabel} · ${filtrados.length} manobra(s)`, padX, subtitleY);
 
     const countsText = categoriaCounts
       ? `Total ${categoriaCounts.reduce((a, b) => a + b, 0)}   ·   ` + CATEGORIAS.map((cat, i) => `${CAT_LABEL[cat]} ${categoriaCounts[i]}`).join("   ·   ")
       : `${CAT_LABEL[catFiltro]} ${filtrados.length}`;
     ctx.fillStyle = "#ff5c38";
     ctx.font = "bold 14px sans-serif";
-    ctx.fillText(countsText, 24, countsY);
+    ctx.fillText(countsText, padX, countsY);
 
     ctx.strokeStyle = "#2d313b";
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(24, dividerY);
-    ctx.lineTo(width - 24, dividerY);
+    ctx.moveTo(padX, dividerY);
+    ctx.lineTo(width - padX, dividerY);
     ctx.stroke();
 
-    let y = headerHeight + 14;
     if (!filtrados.length) {
       ctx.fillStyle = "#9aa0ab";
       ctx.font = "16px sans-serif";
-      ctx.fillText("Nenhuma manobra nesse filtro.", 24, y);
-    } else {
-      filtrados.forEach(t => {
+      ctx.fillText("Nenhuma manobra nesse filtro.", padX, headerHeight + 14);
+      return canvas;
+    }
+
+    const colEsquerda = filtrados.slice(0, rows);
+    const colDireita = filtrados.slice(rows);
+
+    [colEsquerda, colDireita].forEach((col, colIndex) => {
+      const x = colIndex === 0 ? padX : col2X;
+      let y = headerHeight + 14;
+      col.forEach(t => {
         ctx.fillStyle = "#f0f1f3";
         ctx.font = "bold 18px sans-serif";
-        ctx.fillText(t.nome, 24, y);
+        ctx.fillText(truncateToWidth(ctx, t.nome, colWidth), x, y);
         ctx.fillStyle = "#9aa0ab";
         ctx.font = "13px sans-serif";
         const cats = (t.categorias || []).map(c => CAT_LABEL[c] || c).join(", ");
-        ctx.fillText(cats, 24, y + 18);
+        ctx.fillText(truncateToWidth(ctx, cats, colWidth), x, y + 18);
         y += lineHeight;
       });
-    }
+    });
 
     return canvas;
   }
