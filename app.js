@@ -522,7 +522,7 @@
     ctx.fillText(`${estiloLabel} · ${catLabel} · ${filtrados.length} manobra(s)`, 24, subtitleY);
 
     const countsText = categoriaCounts
-      ? `Total ${filtrados.length}   ·   ` + CATEGORIAS.map((cat, i) => `${CAT_LABEL[cat]} ${categoriaCounts[i]}`).join("   ·   ")
+      ? `Total ${categoriaCounts.reduce((a, b) => a + b, 0)}   ·   ` + CATEGORIAS.map((cat, i) => `${CAT_LABEL[cat]} ${categoriaCounts[i]}`).join("   ·   ")
       : `${CAT_LABEL[catFiltro]} ${filtrados.length}`;
     ctx.fillStyle = "#ff5c38";
     ctx.font = "bold 14px sans-serif";
