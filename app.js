@@ -492,8 +492,10 @@
       : null;
 
     const width = 720;
-    const countsRowHeight = categoriaCounts ? 30 : 0;
-    const headerHeight = 110 + countsRowHeight;
+    const subtitleY = 100;
+    const countsY = subtitleY + 32;
+    const dividerY = countsY + 26;
+    const headerHeight = dividerY + 10;
     const lineHeight = 48;
     const height = headerHeight + Math.max(filtrados.length, 1) * lineHeight + 50;
 
@@ -517,21 +519,19 @@
     const catLabel = isTodas ? "todas as categorias" : CAT_LABEL[catFiltro];
     ctx.fillStyle = "#9aa0ab";
     ctx.font = "14px sans-serif";
-    ctx.fillText(`${estiloLabel} · ${catLabel} · ${filtrados.length} manobra(s)`, 24, 100);
+    ctx.fillText(`${estiloLabel} · ${catLabel} · ${filtrados.length} manobra(s)`, 24, subtitleY);
 
-    if (categoriaCounts) {
-      const countsText = CATEGORIAS
-        .map((cat, i) => `${CAT_LABEL[cat]} ${categoriaCounts[i]}`)
-        .join("   ·   ");
-      ctx.fillStyle = "#ff5c38";
-      ctx.font = "bold 14px sans-serif";
-      ctx.fillText(countsText, 24, 124);
-    }
+    const countsText = categoriaCounts
+      ? `Total ${filtrados.length}   ·   ` + CATEGORIAS.map((cat, i) => `${CAT_LABEL[cat]} ${categoriaCounts[i]}`).join("   ·   ")
+      : `${CAT_LABEL[catFiltro]} ${filtrados.length}`;
+    ctx.fillStyle = "#ff5c38";
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText(countsText, 24, countsY);
 
     ctx.strokeStyle = "#2d313b";
     ctx.beginPath();
-    ctx.moveTo(24, headerHeight - 16);
-    ctx.lineTo(width - 24, headerHeight - 16);
+    ctx.moveTo(24, dividerY);
+    ctx.lineTo(width - 24, dividerY);
     ctx.stroke();
 
     let y = headerHeight + 14;
