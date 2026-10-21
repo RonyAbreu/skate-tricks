@@ -25,7 +25,7 @@
 <meta name="theme-color" content="#0f1115">
 <link rel="icon" type="image/png" href="assets/skatista.png">
 <link rel="apple-touch-icon" href="assets/skatista.png">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 
@@ -38,38 +38,90 @@
   <span id="catCount" class="cat-count">0</span>
 </header>
 
-<div class="search-bar">
-  <input type="search" id="searchInput" placeholder="Buscar manobra...">
+<div id="screenTricks">
+  <div class="search-bar">
+    <input type="search" id="searchInput" placeholder="Buscar manobra...">
+  </div>
+
+  <div class="estilo-group" id="estiloGroup">
+    <button class="estilo-btn active" data-estilo="solo">Solo</button>
+    <button class="estilo-btn" data-estilo="corrimao">Corrimão</button>
+    <button class="estilo-btn" data-estilo="borda">Borda</button>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-cat="todas">Todas</button>
+    <button class="tab" data-cat="base">Base</button>
+    <button class="tab" data-cat="nollie">Nollie</button>
+    <button class="tab" data-cat="fakie">Fakie</button>
+    <button class="tab" data-cat="switch">Switch</button>
+  </nav>
+
+  <main id="list" class="list"></main>
+
+  <div id="emptyState" class="empty-state" hidden>
+    <img src="assets/skatista.png" alt="" class="empty-illustration">
+    <p>Nenhuma manobra ainda. Toca no + pra adicionar.</p>
+  </div>
+
+  <button id="fabAdd" class="fab" aria-label="Adicionar manobra">+</button>
 </div>
 
-<div class="estilo-group" id="estiloGroup">
-  <button class="estilo-btn active" data-estilo="solo">Solo</button>
-  <button class="estilo-btn" data-estilo="corrimao">Corrimão</button>
-  <button class="estilo-btn" data-estilo="borda">Borda</button>
+<div id="screenAjustes" class="screen" hidden>
+  <div class="settings-header">
+    <h2>Ajustes</h2>
+  </div>
+  <div class="settings-list">
+    <button type="button" class="settings-row" id="rowTutorial">
+      <span class="settings-row-icon">❓</span>
+      <span class="settings-row-text">
+        <strong>Ver tutorial</strong>
+        <small>Rever rapidinho como o app funciona</small>
+      </span>
+    </button>
+    <button type="button" class="settings-row" id="rowExport">
+      <span class="settings-row-icon">⬇️</span>
+      <span class="settings-row-text">
+        <strong>Exportar backup</strong>
+        <small>Salva um arquivo no teu dispositivo com todas as tuas manobras. Guarda esse arquivo — é a única forma de recuperar os dados se trocar de celular ou limpar o navegador.</small>
+      </span>
+    </button>
+    <button type="button" class="settings-row" id="rowImport">
+      <span class="settings-row-icon">⬆️</span>
+      <span class="settings-row-text">
+        <strong>Importar backup</strong>
+        <small>Escolhe um arquivo exportado antes e traz as manobras de volta, sem apagar o que já tens cadastrado.</small>
+      </span>
+    </button>
+    <button type="button" class="settings-row" id="rowShare">
+      <span class="settings-row-icon">🖼️</span>
+      <span class="settings-row-text">
+        <strong>Compartilhar imagem</strong>
+        <small>Escolhe um estilo e uma categoria e gera uma imagem com as manobras pra postar ou mandar pra alguém.</small>
+      </span>
+    </button>
+    <button type="button" class="settings-row" id="rowStats">
+      <span class="settings-row-icon">📊</span>
+      <span class="settings-row-text">
+        <strong>Estatísticas</strong>
+        <small>Veja em números e gráficos quantas manobras tu sabe em cada estilo e categoria.</small>
+      </span>
+    </button>
+  </div>
 </div>
 
-<nav class="tabs" id="tabs">
-  <button class="tab active" data-cat="todas">Todas</button>
-  <button class="tab" data-cat="base">Base</button>
-  <button class="tab" data-cat="nollie">Nollie</button>
-  <button class="tab" data-cat="fakie">Fakie</button>
-  <button class="tab" data-cat="switch">Switch</button>
+<input type="file" id="importInput" accept="application/json" hidden>
+
+<nav class="bottom-nav" id="bottomNav">
+  <button type="button" class="bottom-nav-btn active" id="navTricks" data-screen="tricks">
+    <span class="bottom-nav-icon">🛹</span>
+    <span>Tricks</span>
+  </button>
+  <button type="button" class="bottom-nav-btn" id="navAjustes" data-screen="ajustes">
+    <span class="bottom-nav-icon">⚙️</span>
+    <span>Ajustes</span>
+  </button>
 </nav>
-
-<main id="list" class="list"></main>
-
-<div id="emptyState" class="empty-state" hidden>
-  <img src="assets/skatista.png" alt="" class="empty-illustration">
-  <p>Nenhuma manobra ainda. Toca no + pra adicionar.</p>
-</div>
-
-<button id="fabAdd" class="fab" aria-label="Adicionar manobra">+</button>
-
-<div class="bottom-actions">
-  <button id="btnExport" class="btn-ghost">Exportar</button>
-  <label class="btn-ghost" for="importInput">Importar</label>
-  <input type="file" id="importInput" accept="application/json" hidden>
-</div>
 
 <div id="modal" class="modal" hidden>
   <div class="modal-content">
@@ -151,12 +203,8 @@
       <span>Usa as abas <strong>Base / Nollie / Fakie / Switch</strong> pra filtrar</span>
     </div>
     <div class="tutorial-row">
-      <span class="tutorial-icon">⬇️</span>
-      <span><strong>Exportar</strong> salva um arquivo de backup no teu dispositivo</span>
-    </div>
-    <div class="tutorial-row">
-      <span class="tutorial-icon">⬆️</span>
-      <span><strong>Importar</strong> traz de volta as manobras de um backup</span>
+      <span class="tutorial-icon">⚙️</span>
+      <span>Na aba <strong>Ajustes</strong> tu acha Exportar, Importar, Compartilhar imagem e Estatísticas</span>
     </div>
     <p class="tutorial-warn">⚠️ Os dados ficam só neste navegador/aparelho. Exporta de vez em quando pra não perder nada!</p>
     <div class="modal-actions">
@@ -165,9 +213,58 @@
   </div>
 </div>
 
+<div id="shareModal" class="modal" hidden>
+  <div class="modal-content">
+    <h2>Compartilhar imagem</h2>
+    <p class="onboard-subtitle">Escolhe o que entra na imagem</p>
+
+    <label for="shareEstilo">Estilo</label>
+    <select id="shareEstilo">
+      <option value="todas">Todos os estilos</option>
+      <option value="solo">Solo</option>
+      <option value="corrimao">Corrimão</option>
+      <option value="borda">Borda</option>
+    </select>
+
+    <label for="shareCategoria">Categoria</label>
+    <select id="shareCategoria">
+      <option value="todas">Todas as categorias</option>
+      <option value="base">Base</option>
+      <option value="nollie">Nollie</option>
+      <option value="fakie">Fakie</option>
+      <option value="switch">Switch</option>
+    </select>
+
+    <div class="modal-actions">
+      <button type="button" id="btnShareCancel" class="btn-ghost">Cancelar</button>
+      <button type="button" id="btnShareGerar" class="btn-primary">Gerar imagem</button>
+    </div>
+  </div>
+</div>
+
+<div id="statsModal" class="modal" hidden>
+  <div class="modal-content stats-content">
+    <h2>Estatísticas</h2>
+    <div id="statsCards" class="stats-cards"></div>
+
+    <h3 class="stats-subtitle">Por categoria</h3>
+    <div id="statsRadarCategoria" class="stats-chart"></div>
+
+    <h3 class="stats-subtitle">Por estilo</h3>
+    <div id="statsRadarEstilo" class="stats-chart"></div>
+
+    <h3 class="stats-subtitle">Categoria × estilo</h3>
+    <div id="statsMatrix" class="stats-matrix"></div>
+
+    <div class="modal-actions">
+      <button type="button" id="btnStatsClose" class="btn-primary">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast" hidden></div>
 
 <script src="db.js?v=2"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
