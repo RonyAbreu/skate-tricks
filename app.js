@@ -481,23 +481,21 @@
   function buildShareCanvas(estiloFiltro, catFiltro) {
     const porEstilo = tricks.filter(t => (t.estilo || "solo") === estiloFiltro);
     const estiloLabel = ESTILO_LABEL[estiloFiltro] || estiloFiltro;
+    const isTodas = catFiltro === "todas";
+
+    const filtrados = porEstilo
+      .filter(t => isTodas || (t.categorias || []).includes(catFiltro))
+      .sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
+
+    const categoriaCounts = isTodas
+      ? CATEGORIAS.map(cat => porEstilo.filter(t => (t.categorias || []).includes(cat)).length)
+      : null;
 
     const width = 720;
-    const headerHeight = 130;
-
-    let categoriaCounts = null;
-    let filtrados = null;
-    if (catFiltro === "todas") {
-      categoriaCounts = CATEGORIAS.map(cat => porEstilo.filter(t => (t.categorias || []).includes(cat)).length);
-    } else {
-      filtrados = porEstilo
-        .filter(t => (t.categorias || []).includes(catFiltro))
-        .sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
-    }
-
-    const rowCount = categoriaCounts ? categoriaCounts.length : Math.max(filtrados.length, 1);
-    const lineHeight = categoriaCounts ? 44 : 36;
-    const height = headerHeight + rowCount * lineHeight + 50;
+    const countsRowHeight = categoriaCounts ? 30 : 0;
+    const headerHeight = 110 + countsRowHeight;
+    const lineHeight = 48;
+    const height = headerHeight + Math.max(filtrados.length, 1) * lineHeight + 50;
 
     const canvas = document.createElement("canvas");
     canvas.width = width;
@@ -516,11 +514,19 @@
     ctx.font = "16px sans-serif";
     ctx.fillText(nome ? `Skatista: ${nome}` : "Minhas manobras", 24, 76);
 
-    const catLabel = catFiltro === "todas" ? "todas as categorias" : CAT_LABEL[catFiltro];
-    const total = categoriaCounts ? categoriaCounts.reduce((a, b) => a + b, 0) : filtrados.length;
+    const catLabel = isTodas ? "todas as categorias" : CAT_LABEL[catFiltro];
     ctx.fillStyle = "#9aa0ab";
     ctx.font = "14px sans-serif";
-    ctx.fillText(`${estiloLabel} · ${catLabel} · ${total} manobra(s)`, 24, 100);
+    ctx.fillText(`${estiloLabel} · ${catLabel} · ${filtrados.length} manobra(s)`, 24, 100);
+
+    if (categoriaCounts) {
+      const countsText = CATEGORIAS
+        .map((cat, i) => `${CAT_LABEL[cat]} ${categoriaCounts[i]}`)
+        .join("   ·   ");
+      ctx.fillStyle = "#ff5c38";
+      ctx.font = "bold 14px sans-serif";
+      ctx.fillText(countsText, 24, 124);
+    }
 
     ctx.strokeStyle = "#2d313b";
     ctx.beginPath();
@@ -529,20 +535,7 @@
     ctx.stroke();
 
     let y = headerHeight + 14;
-    if (categoriaCounts) {
-      CATEGORIAS.forEach((cat, i) => {
-        ctx.fillStyle = "#f0f1f3";
-        ctx.font = "bold 20px sans-serif";
-        ctx.textAlign = "left";
-        ctx.fillText(CAT_LABEL[cat], 24, y);
-        ctx.fillStyle = "#ff5c38";
-        ctx.font = "bold 20px sans-serif";
-        ctx.textAlign = "right";
-        ctx.fillText(String(categoriaCounts[i]), width - 24, y);
-        ctx.textAlign = "left";
-        y += lineHeight;
-      });
-    } else if (!filtrados.length) {
+    if (!filtrados.length) {
       ctx.fillStyle = "#9aa0ab";
       ctx.font = "16px sans-serif";
       ctx.fillText("Nenhuma manobra nesse filtro.", 24, y);
@@ -551,6 +544,10 @@
         ctx.fillStyle = "#f0f1f3";
         ctx.font = "bold 18px sans-serif";
         ctx.fillText(t.nome, 24, y);
+        ctx.fillStyle = "#9aa0ab";
+        ctx.font = "13px sans-serif";
+        const cats = (t.categorias || []).map(c => CAT_LABEL[c] || c).join(", ");
+        ctx.fillText(cats, 24, y + 18);
         y += lineHeight;
       });
     }
