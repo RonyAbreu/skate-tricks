@@ -415,8 +415,11 @@
   }
 
   function renderStats() {
-    const totalTricks = tricks.length;
-    const estiloCounts = ESTILOS.map(es => tricks.filter(t => (t.estilo || "solo") === es).length);
+    const estiloCounts = ESTILOS.map(es =>
+      tricks.filter(t => (t.estilo || "solo") === es)
+        .reduce((sum, t) => sum + (t.categorias || []).length, 0)
+    );
+    const totalTricks = estiloCounts.reduce((a, b) => a + b, 0);
     const catCounts = CATEGORIAS.map(cat => tricks.filter(t => (t.categorias || []).includes(cat)).length);
 
     statsCardsEl.innerHTML = "";
