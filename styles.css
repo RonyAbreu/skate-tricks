@@ -584,7 +584,8 @@ body {
   color: var(--text-dim);
 }
 
-#onboardNome {
+#onboardNome,
+.share-select {
   width: 100%;
   padding: 11px 12px;
   border-radius: 10px;
@@ -594,6 +595,7 @@ body {
   font-size: 15px;
   font-family: inherit;
   margin-bottom: 16px;
+  display: block;
 }
 
 #onboardNome:focus {

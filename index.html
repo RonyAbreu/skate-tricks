@@ -25,7 +25,7 @@
 <meta name="theme-color" content="#0f1115">
 <link rel="icon" type="image/png" href="assets/skatista.png">
 <link rel="apple-touch-icon" href="assets/skatista.png">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 
@@ -218,16 +218,15 @@
     <h2>Compartilhar imagem</h2>
     <p class="onboard-subtitle">Escolhe o que entra na imagem</p>
 
-    <label for="shareEstilo">Estilo</label>
-    <select id="shareEstilo">
-      <option value="todas">Todos os estilos</option>
+    <label for="shareEstilo" class="field-label">Estilo</label>
+    <select id="shareEstilo" class="share-select">
       <option value="solo">Solo</option>
       <option value="corrimao">Corrimão</option>
       <option value="borda">Borda</option>
     </select>
 
-    <label for="shareCategoria">Categoria</label>
-    <select id="shareCategoria">
+    <label for="shareCategoria" class="field-label">Categoria</label>
+    <select id="shareCategoria" class="share-select">
       <option value="todas">Todas as categorias</option>
       <option value="base">Base</option>
       <option value="nollie">Nollie</option>
@@ -265,6 +264,6 @@
 <div id="toast" class="toast" hidden></div>
 
 <script src="db.js?v=2"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
